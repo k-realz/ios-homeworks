@@ -10,6 +10,11 @@ import UIKit
 
 class LogInViewController: UIViewController {
     
+    //создаем экземпляр CurrentUserService. чтобы вызвать у него метод returnUser
+    let someUserService = CurrentUserService()
+    //создаем еще один экземпляр для Дебаг схемы
+    let testUserService = TestUserService()
+    
     private let scrollView = UIScrollView()
     
     private let logInView: UIView = {
@@ -96,9 +101,36 @@ class LogInViewController: UIViewController {
         return button
     }()
     
+    private func showAlert() {
+        let alertController = UIAlertController(title: "ERROR", message: "User name is invalid", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { _ in
+        }
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
+        print("invalid name")
+    }
+    
     @objc private func tapLogInButton() {
-        let profileVC = storyboard?.instantiateViewController(identifier: "ProfileVC")
-        navigationController?.pushViewController(profileVC!, animated: true)
+     //   let profileVC = storyboard?.instantiateViewController(identifier: "ProfileVC")
+     //   navigationController?.pushViewController(profileVC!, animated: true)
+        
+        #if DEBUG
+        if let username = emailTextField.text,
+           let _ = testUserService.returnUser(userName: username) {
+            let profileVC = ProfileViewController(userService: testUserService, userName: username)
+            navigationController?.pushViewController(profileVC, animated: true)
+        } else {
+            showAlert()
+        }
+        #else
+        if let username = emailTextField.text,
+           let _ = someUserService.returnUser(userName: username) {
+            let profileVC = ProfileViewController(userService: someUserService, userName: username)
+            navigationController?.pushViewController(profileVC, animated: true)
+        } else {
+            showAlert()
+        }
+        #endif
     }
     
     override func viewDidLoad() {

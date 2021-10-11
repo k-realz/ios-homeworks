@@ -23,7 +23,7 @@ class ProfileHeaderView: UIView {
         return image
     }()
     
-    private let userName: UILabel = {
+     let userName: UILabel = {
         let label = UILabel()
         label.text = "Microphone Checker"
         label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
@@ -32,7 +32,7 @@ class ProfileHeaderView: UIView {
         return label
     }()
     
-    private let userStatus: UILabel = {
+     let userStatus: UILabel = {
         let label = UILabel()
         label.text = "Hi, my name is..."
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
