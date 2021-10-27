@@ -11,8 +11,7 @@ import SnapKit
 
 class ProfileHeaderView: UIView {
     
-     
-    lazy var userPicture: UIImageView =  {
+     lazy var userPicture: UIImageView =  {
         var image = UIImageView(image: #imageLiteral(resourceName: "avatar"))
         image.layer.borderWidth = 3.0
         image.layer.borderColor = UIColor.white.cgColor
@@ -146,10 +145,12 @@ class ProfileHeaderView: UIView {
         userStatus.text = statusText
     }
     
-    
-    
-    
+    func configureUser(user: User) {
+                userName.text = user.userName
+                userPicture.image = user.userPicture
+                userStatus.text = user.userStatus
     }
+}
     
 
 

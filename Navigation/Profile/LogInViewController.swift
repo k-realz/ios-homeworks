@@ -10,6 +10,8 @@ import UIKit
 
 class LogInViewController: UIViewController {
     
+    var loginFactory: MyLoginFactory?
+    
     //создаем экземпляр CurrentUserService. чтобы вызвать у него метод returnUser
     let someUserService = CurrentUserService()
     //создаем еще один экземпляр для Дебаг схемы
@@ -111,26 +113,38 @@ class LogInViewController: UIViewController {
     }
     
     @objc private func tapLogInButton() {
-     //   let profileVC = storyboard?.instantiateViewController(identifier: "ProfileVC")
-     //   navigationController?.pushViewController(profileVC!, animated: true)
+        // ДЗ 3
+        // изменяем способ показа экрана ProfileVC, теперь чтобы туда попасть надо ввести имя пользователя, который хранится в экземпляре UserService
+        // если имя введено неверно, появляется ошибка
+        // разные юзеры для Дебаг и Релиз схем
         
         #if DEBUG
-        if let username = emailTextField.text,
-           let _ = testUserService.returnUser(userName: username) {
-            let profileVC = ProfileViewController(userService: testUserService, userName: username)
-            navigationController?.pushViewController(profileVC, animated: true)
-        } else {
-            showAlert()
-        }
+        let userService = TestUserService()
         #else
+        let userService = CurrentUserService()
+        #endif
+        
+//        ДЗ 4.1 - проверяем логин и пароль через делегата
+        
+//        if  let username = usernameTextField.text,
+//            delegate?.checkTextFields(enteredLogin: username, enteredPassword: passwordTextField.text ?? "") == true {
+//            let profileVC = ProfileViewController(userService: userService, userName: username )
+//            navigationController?.pushViewController(profileVC, animated: true)
+//        } else {
+//            showAlert()
+//        }
+        
+        
+       // ДЗ 4.2 - создаем испектора через фабричный метод и проверяем логин и пароль
+      
         if let username = emailTextField.text,
-           let _ = someUserService.returnUser(userName: username) {
-            let profileVC = ProfileViewController(userService: someUserService, userName: username)
+        let inspector = loginFactory?.produceLoginInspector,
+        inspector().checkTextFields(enteredLogin: username, enteredPassword: passwordTextField.text ?? "") == true {
+            let profileVC = ProfileViewController(userService: userService, userName: username )
             navigationController?.pushViewController(profileVC, animated: true)
         } else {
             showAlert()
         }
-        #endif
     }
     
     override func viewDidLoad() {
