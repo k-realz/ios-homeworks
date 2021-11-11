@@ -1,1 +1,1 @@
-# ios-homeworks
+# HW_2_6
