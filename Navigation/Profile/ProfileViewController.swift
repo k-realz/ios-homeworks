@@ -12,7 +12,7 @@ class ProfileViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let arrayOfPosts = PostStorage.postArray
-    private let profileHeaderView = ProfileHeaderView()
+    let profileHeaderView = ProfileHeaderView()
     let userService: UserService
     let userName: String
     
@@ -64,7 +64,6 @@ class ProfileViewController: UIViewController {
     
     func animation() {
         
-      
         UIView.animate(withDuration: 0.5, animations: {
             self.profileHeaderView.userPicture.center = self.view.center
             self.profileHeaderView.userPicture.transform = CGAffineTransform.init(scaleX: 0.99 , y: 0.99 )
@@ -103,8 +102,8 @@ class ProfileViewController: UIViewController {
         })
     }
     
-    
     private func setUpAnimationViews(){
+        
         view.addSubview(clearButton)
         tableView.addSubview(animationView)
         
@@ -119,14 +118,12 @@ class ProfileViewController: UIViewController {
             clearButton.widthAnchor.constraint(equalToConstant: 30),
             clearButton.heightAnchor.constraint(equalTo: clearButton.widthAnchor)
         ]
-        NSLayoutConstraint.activate(constraints)
         
-    
+        NSLayoutConstraint.activate(constraints)
     }
     
     private func showUserData() {
         if let user = self.userService.returnUser(userName: self.userName) {
-            
             profileHeaderView.userName.text = user.userName
             profileHeaderView.userPicture.image = user.userPicture
             profileHeaderView.userStatus.text = user.userStatus
@@ -148,7 +145,6 @@ class ProfileViewController: UIViewController {
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
         tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: String(describing: PhotosTableViewCell.self))
         
-       
         let constraints = [
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -184,7 +180,6 @@ extension ProfileViewController: UITableViewDataSource {
             return cell
             
         default:
-            
             let cell: PostTableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: PostTableViewCell.self), for: indexPath) as! PostTableViewCell
             
             cell.post = arrayOfPosts[indexPath.row]
@@ -197,10 +192,6 @@ extension ProfileViewController: UITableViewDataSource {
         return UITableView.automaticDimension
     }
 }
-
-
-
-
 
 // MARK: UITableViewDelegate
 
@@ -229,15 +220,12 @@ extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 0 {
-            
-            let photosVC = storyboard?.instantiateViewController(identifier: "PhotosVC") as! PhotosViewController
+            let photosVC = PhotosViewController()
             navigationController?.pushViewController(photosVC, animated: true)
-
         } else {
-        return tableView.deselectRow(at: indexPath, animated: true)
-        
+            return tableView.deselectRow(at: indexPath, animated: true)
+            
+        }
     }
-}
-
-
+    
 }
