@@ -10,10 +10,7 @@ import UIKit
 
 class LogInViewController: UIViewController {
     
-    //создаем экземпляр CurrentUserService. чтобы вызвать у него метод returnUser
-    let someUserService = CurrentUserService()
-    //создаем еще один экземпляр для Дебаг схемы
-    let testUserService = TestUserService()
+    var loginFactory: MyLoginFactory?
     
     private let scrollView = UIScrollView()
     
@@ -24,8 +21,7 @@ class LogInViewController: UIViewController {
         return logInView
     }()
     
-    
-    private let logoVKImageView: UIImageView = {
+    private let logoImageView: UIImageView = {
         let imageView = UIImageView(image:#imageLiteral(resourceName: "logo"))
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -54,7 +50,7 @@ class LogInViewController: UIViewController {
         textField.autocapitalizationType = .none
         textField.backgroundColor = .systemGray6
         textField.clipsToBounds = true
-        textField.placeholder = "Email/Phone"
+        textField.placeholder = "Email/Phone/Username"
         textField.returnKeyType = UIReturnKeyType.done
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -102,7 +98,7 @@ class LogInViewController: UIViewController {
     }()
     
     private func showAlert() {
-        let alertController = UIAlertController(title: "ERROR", message: "User name is invalid", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "ATTENTION! ERROR!", message: "Username is invalid", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Cancel", style: .default) { _ in
         }
         alertController.addAction(cancelAction)
@@ -111,26 +107,21 @@ class LogInViewController: UIViewController {
     }
     
     @objc private func tapLogInButton() {
-     //   let profileVC = storyboard?.instantiateViewController(identifier: "ProfileVC")
-     //   navigationController?.pushViewController(profileVC!, animated: true)
         
         #if DEBUG
-        if let username = emailTextField.text,
-           let _ = testUserService.returnUser(userName: username) {
-            let profileVC = ProfileViewController(userService: testUserService, userName: username)
-            navigationController?.pushViewController(profileVC, animated: true)
-        } else {
-            showAlert()
-        }
+        let userService = TestUserService()
         #else
+        let userService = CurrentUserService()
+        #endif
+        
         if let username = emailTextField.text,
-           let _ = someUserService.returnUser(userName: username) {
-            let profileVC = ProfileViewController(userService: someUserService, userName: username)
+        let inspector = loginFactory?.produceLoginInspector,
+        inspector().checkTextFields(enteredLogin: username, enteredPassword: passwordTextField.text ?? "") == true {
+            let profileVC = ProfileViewController(userService: userService, userName: username )
             navigationController?.pushViewController(profileVC, animated: true)
         } else {
             showAlert()
         }
-        #endif
     }
     
     override func viewDidLoad() {
@@ -149,7 +140,7 @@ class LogInViewController: UIViewController {
         
         view.addSubview(scrollView)
         scrollView.addSubview(logInView)
-        logInView.addSubviews(logoVKImageView, autorizationView, logInButton)
+        logInView.addSubviews(logoImageView, autorizationView, logInButton)
         autorizationView.addSubviews(emailTextField, passwordTextField)
       
         
@@ -165,12 +156,12 @@ class LogInViewController: UIViewController {
             logInView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             logInView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            logoVKImageView.topAnchor.constraint(equalTo: logInView.topAnchor, constant: 120),
-            logoVKImageView.centerXAnchor.constraint(equalTo: logInView.centerXAnchor),
-            logoVKImageView.widthAnchor.constraint(equalToConstant: 100),
-            logoVKImageView.heightAnchor.constraint(equalToConstant: 100),
+            logoImageView.topAnchor.constraint(equalTo: logInView.topAnchor, constant: 120),
+            logoImageView.centerXAnchor.constraint(equalTo: logInView.centerXAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 100),
+            logoImageView.heightAnchor.constraint(equalToConstant: 100),
             
-            autorizationView.topAnchor.constraint(equalTo: logoVKImageView.bottomAnchor, constant: 120),
+            autorizationView.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 120),
             autorizationView.leadingAnchor.constraint(equalTo: logInView.leadingAnchor, constant: 16),
             autorizationView.trailingAnchor.constraint(equalTo: logInView.trailingAnchor, constant: -16),
             autorizationView.heightAnchor.constraint(equalToConstant: 100),
@@ -195,7 +186,6 @@ class LogInViewController: UIViewController {
         NSLayoutConstraint.activate(constraints)
     }
     
-    // MARK: Keyboard
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -221,12 +211,6 @@ class LogInViewController: UIViewController {
     @objc fileprivate func keyboardWillHide(notification: NSNotification) {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
-    }
-}
-
-extension UIView {
-    func toAutoLayout() {
-        self.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 
