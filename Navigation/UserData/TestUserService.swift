@@ -13,7 +13,6 @@ class TestUserService: UserService {
     
     let testUser = User(userName: "Test", userPicture: #imageLiteral(resourceName: "Kirill"), userStatus: "testing the test")
     
-    
     func returnUser(userName: String) -> User? {
         
        if userName == testUser.userName {

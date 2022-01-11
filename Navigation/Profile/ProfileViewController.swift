@@ -12,7 +12,7 @@ class ProfileViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let arrayOfPosts = PostStorage.postArray
-    let profileHeaderView = ProfileHeaderView()
+    private let profileHeaderView = ProfileHeaderView()
     let userService: UserService
     let userName: String
     
@@ -36,7 +36,7 @@ class ProfileViewController: UIViewController {
     
     private let clearButton: UIButton = {
         let button = UIButton()
-        button.toAutoLayout()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.setBackgroundImage(UIImage(imageLiteralResourceName: "close_btn"), for: .normal)
         button.backgroundColor = .white
         button.alpha = 0
@@ -50,8 +50,11 @@ class ProfileViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
         setUpTableView()
         setUpAnimationViews()
-        showUserData()
-        
+       
+       if let user = userService.returnUser(userName: userName) {
+       profileHeaderView.configureUser(user: user)
+       }
+       
         let imageTap = UITapGestureRecognizer(target: self, action: #selector(tap))
         
         profileHeaderView.userPicture.isUserInteractionEnabled = true
@@ -64,7 +67,7 @@ class ProfileViewController: UIViewController {
     
     func animation() {
         
-        UIView.animate(withDuration: 0.5, animations: {
+      UIView.animate(withDuration: 0.5, animations: {
             self.profileHeaderView.userPicture.center = self.view.center
             self.profileHeaderView.userPicture.transform = CGAffineTransform.init(scaleX: 0.99 , y: 0.99 )
             self.profileHeaderView.userPicture.bounds = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width)
@@ -122,14 +125,6 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate(constraints)
     }
     
-    private func showUserData() {
-        if let user = self.userService.returnUser(userName: self.userName) {
-            profileHeaderView.userName.text = user.userName
-            profileHeaderView.userPicture.image = user.userPicture
-            profileHeaderView.userStatus.text = user.userStatus
-        }
-    }
-    
     private func setUpTableView() {
         view.addSubview(tableView)
         
@@ -145,7 +140,7 @@ class ProfileViewController: UIViewController {
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
         tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: String(describing: PhotosTableViewCell.self))
         
-        let constraints = [
+       let constraints = [
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -155,7 +150,6 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate(constraints)
     }
 }
-// MARK: UITableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource {
     
@@ -193,8 +187,6 @@ extension ProfileViewController: UITableViewDataSource {
     }
 }
 
-// MARK: UITableViewDelegate
-
 extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
@@ -223,9 +215,8 @@ extension ProfileViewController: UITableViewDelegate {
             let photosVC = PhotosViewController()
             navigationController?.pushViewController(photosVC, animated: true)
         } else {
-            return tableView.deselectRow(at: indexPath, animated: true)
-            
+        return tableView.deselectRow(at: indexPath, animated: true)
+        
         }
     }
-    
 }

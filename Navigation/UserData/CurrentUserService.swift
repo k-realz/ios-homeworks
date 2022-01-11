@@ -13,7 +13,6 @@ class CurrentUserService: UserService {
     
     let someUser = User(userName: "_k_real_", userPicture: #imageLiteral(resourceName: "184527_1166184446742589_7049446128454751734_n"), userStatus: "looking for code")
     
-    
     func returnUser(userName: String) -> User? {
         
        if userName == someUser.userName {

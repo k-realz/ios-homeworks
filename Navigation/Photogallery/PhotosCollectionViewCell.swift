@@ -21,7 +21,7 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         image.contentMode = .scaleAspectFill
         image.backgroundColor = .white
         image.clipsToBounds = true
-        image.toAutoLayout()
+        image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
     
