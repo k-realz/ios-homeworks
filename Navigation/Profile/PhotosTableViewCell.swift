@@ -39,7 +39,7 @@ class PhotosTableViewCell: UITableViewCell {
     }()
     
     private let photosImageView2: UIImageView = {
-        let image = UIImageView(image: #imageLiteral(resourceName: "03"))
+        let image = UIImageView(image: #imageLiteral(resourceName: "13"))
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 6
         image.clipsToBounds = true
@@ -48,7 +48,7 @@ class PhotosTableViewCell: UITableViewCell {
     }()
     
     private let photosImageView3: UIImageView = {
-        let image = UIImageView(image: #imageLiteral(resourceName: "14"))
+        let image = UIImageView(image: #imageLiteral(resourceName: "18"))
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 6
         image.clipsToBounds = true
@@ -57,7 +57,7 @@ class PhotosTableViewCell: UITableViewCell {
     }()
     
     private let photosImageView4: UIImageView = {
-        let image = UIImageView(image: #imageLiteral(resourceName: "09"))
+        let image = UIImageView(image: #imageLiteral(resourceName: "03"))
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 6
         image.clipsToBounds = true
@@ -65,7 +65,7 @@ class PhotosTableViewCell: UITableViewCell {
         return image
     }()
     
-    let photosStack: UIStackView = {
+    private let photosStack: UIStackView = {
         let stackView = UIStackView()
         stackView.distribution = .fillEqually
         stackView.axis = .horizontal
@@ -86,11 +86,12 @@ class PhotosTableViewCell: UITableViewCell {
  
         contentView.addSubviews(photosLabel, arrowImage, photosStack)
         
+        
         photosStack.addArrangedSubview(photosImageView1)
         photosStack.addArrangedSubview(photosImageView2)
         photosStack.addArrangedSubview(photosImageView3)
         photosStack.addArrangedSubview(photosImageView4)
-       
+        
         contentView.backgroundColor = .white
 
         let constraints = [

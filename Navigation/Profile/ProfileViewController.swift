@@ -13,8 +13,8 @@ class ProfileViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let arrayOfPosts = PostStorage.postArray
     private let profileHeaderView = ProfileHeaderView()
-    let userService: UserService
-    let userName: String
+    private let userService: UserService
+    private let userName: String
     
     init(userService: UserService, userName: String) {
         self.userService = userService
@@ -34,27 +34,25 @@ class ProfileViewController: UIViewController {
         return view
     }()
     
-    private let clearButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setBackgroundImage(UIImage(imageLiteralResourceName: "close_btn"), for: .normal)
-        button.backgroundColor = .white
+    private lazy var clearButton: UIButton = {
+        let button = MyCustomButton(title: nil, titleColor: nil, backgroundColor: .white, backgroundImage: UIImage (systemName: "clear")) {
+            self.reversedAnimation()}
         button.alpha = 0
-        button.addTarget(self, action: #selector(tapClearButton), for: .touchUpInside)
+        button.clipsToBounds = false
         return button
     }()
     
-   override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.navigationBar.isHidden = true
         setUpTableView()
         setUpAnimationViews()
-       
-       if let user = userService.returnUser(userName: userName) {
-       profileHeaderView.configureUser(user: user)
-       }
-       
+        
+        if let user = userService.returnUser(userName: userName) {
+        profileHeaderView.configureUser(user: user)
+        }
+        
         let imageTap = UITapGestureRecognizer(target: self, action: #selector(tap))
         
         profileHeaderView.userPicture.isUserInteractionEnabled = true
@@ -67,14 +65,14 @@ class ProfileViewController: UIViewController {
     
     func animation() {
         
-      UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.profileHeaderView.userPicture.center = self.view.center
             self.profileHeaderView.userPicture.transform = CGAffineTransform.init(scaleX: 0.99 , y: 0.99 )
             self.profileHeaderView.userPicture.bounds = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width)
-
+            
             self.profileHeaderView.userPicture.layer.cornerRadius = 0
-            self.animationView.alpha = 0.5
-            self.profileHeaderView.profileAnimationView.alpha = 0.5
+            self.animationView.alpha = 0.7
+            self.profileHeaderView.profileAnimationView.alpha = 0.7
             
         }, completion: {_ in
             
@@ -82,11 +80,6 @@ class ProfileViewController: UIViewController {
                 self.clearButton.alpha = 1
             })
         })
-    }
-    
-    @objc private func tapClearButton() {
-     reversedAnimation()
-        
     }
     
     func reversedAnimation() {
@@ -105,7 +98,7 @@ class ProfileViewController: UIViewController {
         })
     }
     
-    private func setUpAnimationViews(){
+    private func setUpAnimationViews() {
         
         view.addSubview(clearButton)
         tableView.addSubview(animationView)
@@ -129,7 +122,7 @@ class ProfileViewController: UIViewController {
         view.addSubview(tableView)
         
         #if DEBUG
-        tableView.backgroundColor = .green
+        tableView.backgroundColor = .systemYellow
         #else
         tableView.backgroundColor = .systemGray6
         #endif
@@ -140,7 +133,7 @@ class ProfileViewController: UIViewController {
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
         tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: String(describing: PhotosTableViewCell.self))
         
-       let constraints = [
+        let constraints = [
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -150,6 +143,7 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate(constraints)
     }
 }
+// MARK: UITableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource {
     
@@ -187,6 +181,8 @@ extension ProfileViewController: UITableViewDataSource {
     }
 }
 
+// MARK: UITableViewDelegate
+
 extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
@@ -215,8 +211,9 @@ extension ProfileViewController: UITableViewDelegate {
             let photosVC = PhotosViewController()
             navigationController?.pushViewController(photosVC, animated: true)
         } else {
-        return tableView.deselectRow(at: indexPath, animated: true)
-        
+            return tableView.deselectRow(at: indexPath, animated: true)
+            
         }
     }
+    
 }

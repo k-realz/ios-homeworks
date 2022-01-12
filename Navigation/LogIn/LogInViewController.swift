@@ -21,7 +21,7 @@ class LogInViewController: UIViewController {
         return logInView
     }()
     
-    private let logoImageView: UIImageView = {
+    private let logoVKImageView: UIImageView = {
         let imageView = UIImageView(image:#imageLiteral(resourceName: "logo"))
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -40,7 +40,7 @@ class LogInViewController: UIViewController {
         return autorizationView
     }()
     
-    private let emailTextField: UITextField = {
+    private let usernameTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 16)
         textField.textColor = .black
@@ -50,7 +50,7 @@ class LogInViewController: UIViewController {
         textField.autocapitalizationType = .none
         textField.backgroundColor = .systemGray6
         textField.clipsToBounds = true
-        textField.placeholder = "Email/Phone/Username"
+        textField.placeholder = "User Name"
         textField.returnKeyType = UIReturnKeyType.done
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -73,76 +73,55 @@ class LogInViewController: UIViewController {
         return textField
     }()
     
-    
     private lazy var logInButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Login", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setBackgroundImage(#imageLiteral(resourceName: "blue_pixel"), for: .normal)
-        
-        if button.isSelected {
-            button.alpha = 0.8
-        } else if button.isHighlighted {
-            button.alpha = 0.8
-        } else if button.isEnabled == false {
-            button.alpha = 0.8
-        } else {
-            button.alpha = 1
+        let button = MyCustomButton(title: "Log in", titleColor: .white, backgroundColor: nil, backgroundImage: #imageLiteral(resourceName: "blue_pixel")) { [self] in
+            
+            #if DEBUG
+            let userService = TestUserService()
+            #else
+            let userService = CurrentUserService()
+            #endif
+            
+            if let username = self.usernameTextField.text,
+               let inspector = self.loginFactory?.produceLoginInspector,
+               inspector().checkTextFields(enteredLogin: username, enteredPassword: self.passwordTextField.text ?? "") == true {
+                let profileVC = ProfileViewController(userService: userService, userName: username )
+                self.navigationController?.pushViewController(profileVC, animated: true)
+            } else {
+                self.showAlert()
+            }
         }
         
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
-        button.addTarget(self, action: #selector(tapLogInButton), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private func showAlert() {
-        let alertController = UIAlertController(title: "ATTENTION! ERROR!", message: "Username is invalid", preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { _ in
-        }
+        let alertController = UIAlertController(title: "ERROR", message: "User name or password is invalid", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Chancel", style: .default, handler: nil)
         alertController.addAction(cancelAction)
         self.present(alertController, animated: true, completion: nil)
         print("invalid name")
     }
     
-    @objc private func tapLogInButton() {
-        
-        #if DEBUG
-        let userService = TestUserService()
-        #else
-        let userService = CurrentUserService()
-        #endif
-        
-        if let username = emailTextField.text,
-        let inspector = loginFactory?.produceLoginInspector,
-        inspector().checkTextFields(enteredLogin: username, enteredPassword: passwordTextField.text ?? "") == true {
-            let profileVC = ProfileViewController(userService: userService, userName: username )
-            navigationController?.pushViewController(profileVC, animated: true)
-        } else {
-            showAlert()
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .white
         navigationController?.navigationBar.isHidden = true
         setupViews()
-        emailTextField.delegate = self
+        usernameTextField.delegate = self
         passwordTextField.delegate = self
     }
     
-
     private func setupViews() {
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(scrollView)
         scrollView.addSubview(logInView)
-        logInView.addSubviews(logoImageView, autorizationView, logInButton)
-        autorizationView.addSubviews(emailTextField, passwordTextField)
-      
+        logInView.addSubviews(logoVKImageView, autorizationView, logInButton)
+        autorizationView.addSubviews(usernameTextField, passwordTextField)
         
         let constraints = [
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -156,20 +135,20 @@ class LogInViewController: UIViewController {
             logInView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             logInView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            logoImageView.topAnchor.constraint(equalTo: logInView.topAnchor, constant: 120),
-            logoImageView.centerXAnchor.constraint(equalTo: logInView.centerXAnchor),
-            logoImageView.widthAnchor.constraint(equalToConstant: 100),
-            logoImageView.heightAnchor.constraint(equalToConstant: 100),
+            logoVKImageView.topAnchor.constraint(equalTo: logInView.topAnchor, constant: 120),
+            logoVKImageView.centerXAnchor.constraint(equalTo: logInView.centerXAnchor),
+            logoVKImageView.widthAnchor.constraint(equalToConstant: 100),
+            logoVKImageView.heightAnchor.constraint(equalToConstant: 100),
             
-            autorizationView.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 120),
+            autorizationView.topAnchor.constraint(equalTo: logoVKImageView.bottomAnchor, constant: 120),
             autorizationView.leadingAnchor.constraint(equalTo: logInView.leadingAnchor, constant: 16),
             autorizationView.trailingAnchor.constraint(equalTo: logInView.trailingAnchor, constant: -16),
             autorizationView.heightAnchor.constraint(equalToConstant: 100),
             
-            emailTextField.topAnchor.constraint(equalTo: autorizationView.topAnchor),
-            emailTextField.leadingAnchor.constraint(equalTo: autorizationView.leadingAnchor),
-            emailTextField.trailingAnchor.constraint(equalTo: autorizationView.trailingAnchor),
-            emailTextField.heightAnchor.constraint(equalToConstant: 49.7),
+            usernameTextField.topAnchor.constraint(equalTo: autorizationView.topAnchor),
+            usernameTextField.leadingAnchor.constraint(equalTo: autorizationView.leadingAnchor),
+            usernameTextField.trailingAnchor.constraint(equalTo: autorizationView.trailingAnchor),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 49.7),
             
             passwordTextField.bottomAnchor.constraint(equalTo: autorizationView.bottomAnchor),
             passwordTextField.leadingAnchor.constraint(equalTo: autorizationView.leadingAnchor),
@@ -226,3 +205,4 @@ extension LogInViewController: UITextFieldDelegate {
         return true
     }
 }
+

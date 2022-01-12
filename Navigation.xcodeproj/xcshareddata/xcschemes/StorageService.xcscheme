@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1250"
+   LastUpgradeVersion = "1240"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "863445EE270B55BF00569942"
+               BlueprintIdentifier = "CE6C3C5426B2DC10006904C6"
                BuildableName = "StorageService.framework"
                BlueprintName = "StorageService"
                ReferencedContainer = "container:Navigation.xcodeproj">
@@ -50,7 +50,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "863445EE270B55BF00569942"
+            BlueprintIdentifier = "CE6C3C5426B2DC10006904C6"
             BuildableName = "StorageService.framework"
             BlueprintName = "StorageService"
             ReferencedContainer = "container:Navigation.xcodeproj">

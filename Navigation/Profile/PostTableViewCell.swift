@@ -14,19 +14,20 @@ private let processor = ImageProcessor()
     
     var post: Posts? {
         didSet {
-                authorLabel.text = post?.author
-                postImageView.image = UIImage(named: post?.image ?? "No Image")
-                descriptionLabel.text = post?.description
-                likesLabel.text = "Likes: \(post?.likes ?? 0)"
-                viewsLabel.text = "Views: \(post?.views ?? 0)"
-                if let image =  UIImage(named: post?.image ?? "No Image") {
-                    processor.processImage(sourceImage: image, filter: post?.filter ?? .chrome) {
+            authorLabel.text = post?.author
+            postImageView.image = UIImage(named: post?.image ?? "No Image")
+            descriptionLabel.text = post?.description
+            likesLabel.text = "Likes: \(post?.likes ?? 0)"
+            viewsLabel.text = "Views: \(post?.views ?? 0)"
+            
+            if let image =  UIImage(named: post?.image ?? "No Image") {
+                processor.processImage(sourceImage: image, filter: post?.filter ?? .chrome) {
                     (image) in
                     postImageView.image = image
-                        }
-                    }
                 }
             }
+        }
+    }
     
     private let authorLabel: UILabel = {
         let label = UILabel()
@@ -79,7 +80,7 @@ private let processor = ImageProcessor()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-     
+        
         contentView.addSubviews(authorLabel, postImageView, descriptionLabel, likesLabel, viewsLabel)
         
         let constraints = [

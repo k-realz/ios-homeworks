@@ -11,8 +11,8 @@ import SnapKit
 
 class ProfileHeaderView: UIView {
     
-     lazy var userPicture: UIImageView =  {
-        var image = UIImageView(image: #imageLiteral(resourceName: "avatar"))
+    let userPicture: UIImageView =  {
+        let image = UIImageView(image: #imageLiteral(resourceName: "mysterious-cat"))
         image.layer.borderWidth = 3.0
         image.layer.borderColor = UIColor.white.cgColor
         image.layer.cornerRadius = 55
@@ -22,35 +22,31 @@ class ProfileHeaderView: UIView {
         return image
     }()
     
-     let userName: UILabel = {
+    private let userName: UILabel = {
         let label = UILabel()
-        label.text = "Microphone Checker"
+        label.text = "Mysterious Cat"
         label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-     let userStatus: UILabel = {
+    private let userStatus: UILabel = {
         let label = UILabel()
-        label.text = "Hi, my name is..."
+        label.text = "Learning how to code..."
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         label.textColor = .gray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let statusButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Set status", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
+    private lazy var statusButton: UIButton = {
+        let button = MyCustomButton(title: "Set status", titleColor: .white, backgroundColor: .systemBlue, backgroundImage: nil) { [self] in
+            self.userStatus.text = self.statusText}
         button.layer.cornerRadius = 14
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 4, height: 4)
         button.layer.shadowOpacity = 0.7
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(buttonIsPressed), for: .touchUpInside)
         return button
     }()
     
@@ -64,7 +60,7 @@ class ProfileHeaderView: UIView {
         textField.layer.borderWidth = 1.0
         textField.layer.borderColor = UIColor.black.cgColor
         textField.layer.cornerRadius = 12
-        textField.placeholder = "Set your new status"
+        textField.placeholder = "Set your status"
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(self, action: #selector(statusTextChanged), for: .editingChanged)
         return textField
@@ -77,18 +73,16 @@ class ProfileHeaderView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+        
     private var statusText = String()
-    
-   
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+     required init?(coder: NSCoder) {
+         fatalError("init(coder:) has not been implemented")
+     }
+
+     override init(frame: CGRect) {
+         super.init(frame: frame)
         
         self.addSubviews(userPicture, userName, userStatus, setStatus, statusButton)
         self.addSubview(profileAnimationView)
@@ -130,19 +124,12 @@ class ProfileHeaderView: UIView {
         profileAnimationView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
-    
     }
     
     private var baseInset: CGFloat { return 16 }
     
-    
-    
     @objc func statusTextChanged(_ textField: UITextField)  {
         statusText = setStatus.text ?? "No status"
-    }
-    
-    @objc func buttonIsPressed() {
-        userStatus.text = statusText
     }
     
     func configureUser(user: User) {
@@ -151,6 +138,4 @@ class ProfileHeaderView: UIView {
                 userStatus.text = user.userStatus
     }
 }
-    
-
 

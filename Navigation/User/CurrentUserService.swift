@@ -11,7 +11,7 @@ import UIKit
 
 class CurrentUserService: UserService {
     
-    let someUser = User(userName: "_k_real_", userPicture: #imageLiteral(resourceName: "184527_1166184446742589_7049446128454751734_n"), userStatus: "looking for code")
+    let someUser = User(userName: "_k_real_", userPicture: #imageLiteral(resourceName: "Снимок экрана 2021-06-20 в 11.09.08"), userStatus: "looking for tomorrow")
     
     func returnUser(userName: String) -> User? {
         
