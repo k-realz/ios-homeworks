@@ -13,7 +13,6 @@ import SnapKit
 
 final class FeedViewController: UIViewController {
     
- 
     var showPost: (()-> Void)?
     var presentPost: (() -> Void)?
     
@@ -22,7 +21,7 @@ final class FeedViewController: UIViewController {
             MyCustomButton(
                 title: "Show Post Normally",
                 titleColor: .white,
-                backgroundColor: .systemGray,
+                backgroundColor: .black,
                 backgroundImage: nil) {
                 self.showPost?()
             }
@@ -35,7 +34,7 @@ final class FeedViewController: UIViewController {
         let button = MyCustomButton(
             title: "Show Post Modally",
             titleColor: .white,
-            backgroundColor: .systemGray,
+            backgroundColor: .black,
             backgroundImage: nil) {
   
             self.presentPost?()
@@ -59,7 +58,7 @@ final class FeedViewController: UIViewController {
         let button = MyCustomButton(
             title: "Check the word",
             titleColor: .white,
-            backgroundColor: .systemGray,
+            backgroundColor: .black,
             backgroundImage: nil) { [weak self] in
             self?.onCompletion()
         }

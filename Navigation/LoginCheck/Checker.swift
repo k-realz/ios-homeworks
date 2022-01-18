@@ -13,7 +13,7 @@ class Checker {
     
     static var instance = Checker()
     #if DEBUG
-    private let login = "TestUser"
+    private let login = "User"
     #else
     private let login = "_k_real_"
     #endif

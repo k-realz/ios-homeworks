@@ -18,7 +18,7 @@ class PostViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = "Post"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Info", style: .plain, target: self, action:  #selector(tapInfoButton))
-        view.backgroundColor = .systemPink
+        view.backgroundColor = .purple
     }
     
     @objc func tapInfoButton () {

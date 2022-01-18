@@ -15,21 +15,27 @@ class PhotosViewController: UIViewController {
     private let layout = UICollectionViewFlowLayout()
     private lazy var photoCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
     private let collectionCellID = "collectionCellID"
-    private let arrayOfPhotos = PhotoStorage.photoArray
-    private var arrayOfPublishedPhotos: [UIImage] = []
-    
+    private var arrayOfPhotos = PhotoStorage.photoArray
+    private var arrayOfPublishedPhotos = [UIImage]()
+    private let processor = ImageProcessor()
+    private let indicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .large)
+        view.isHidden = true
+        view.color = .black
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.navigationBar.isHidden = false
-        navigationItem.title = "Photo Gallery"
+        navigationItem.title = "My Photos Gallery"
         navigationController?.navigationBar.topItem?.title = "Back"
         
         setupCollectionView()
-        photoCollectionView.backgroundColor = .white
+        setupIndicator()
+        processImages()
         
-        facade.addImagesWithTimer(time: 0.5, repeat: 21, userImages: arrayOfPhotos)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,8 +68,56 @@ class PhotosViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints)
     }
-}
 
+    private func setupIndicator(){
+        view.addSubview(indicator)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.isHidden = false
+        indicator.startAnimating()
+        
+        let constraints = [
+            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+
+    private func processImages() {
+        
+        var processedImages = [UIImage]()
+        let start = CFAbsoluteTimeGetCurrent()
+        
+        processor.processImagesOnThread(sourceImages: arrayOfPhotos, filter: .bloom(intensity: 30.7), qos: .utility) { [self] processedPhotos in
+            
+            for photo in processedPhotos {
+                if let image = photo {
+                    processedImages.append(UIImage(cgImage: image))
+                }
+            }
+            
+            DispatchQueue.main.async { [self] in
+                
+                facade.addImagesWithTimer(time: 0.5, repeat: processedImages.count, userImages: processedImages)
+            
+                indicator.stopAnimating()
+                indicator.isHidden = true
+                
+                let timeProcess = CFAbsoluteTimeGetCurrent() - start
+                print("Images are processed with filter in \(timeProcess) seconds")
+                
+                // ДЗ 8
+                // фильтр chrome, qos background - 41,96 секунд
+                // фильтр sepia(intensity: 10.5), qos default - 7,8 секунд
+                // фильтр motionBlur(radius: 20.5), qos userInitiated - 8,14 секунд
+                // фильтр bloom(intensity: 30.7), qos utility - 10,19 секунд
+                
+            }
+        }
+    }
+
+}
+   
 extension PhotosViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return arrayOfPublishedPhotos.count

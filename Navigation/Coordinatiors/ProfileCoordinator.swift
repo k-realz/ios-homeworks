@@ -22,6 +22,7 @@ class ProfileCoordinator: Coordinator {
     }
     
     func startPush() -> UINavigationController {
+        
         let loginVC = LogInViewController()
         
         loginVC.loginFactory = inspectorFactory
@@ -39,8 +40,6 @@ class ProfileCoordinator: Coordinator {
 
 extension ProfileCoordinator {
     func showProfileVC(userService: UserService, username: String) {
-        
-        
         
         let profileVC = moduleFactory.produceProfileVC(userService: userService, userName: username)
   

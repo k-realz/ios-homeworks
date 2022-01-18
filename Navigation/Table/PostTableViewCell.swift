@@ -21,7 +21,7 @@ private let processor = ImageProcessor()
             viewsLabel.text = "Views: \(post?.views ?? 0)"
             
             if let image =  UIImage(named: post?.image ?? "No Image") {
-                processor.processImage(sourceImage: image, filter: post?.filter ?? .chrome) {
+                processor.processImage(sourceImage: image, filter: post?.filter ?? .sepia(intensity: 6.5)) {
                     (image) in
                     postImageView.image = image
                 }
