@@ -16,10 +16,13 @@ final class FeedViewController: UIViewController {
     var showPost: (()-> Void)?
     var presentPost: (() -> Void)?
     
+    var checkTimer: Timer?
+    var timeLeft = 6
+    
     private lazy var showNormallyButton: MyCustomButton = {
         let button =
             MyCustomButton(
-                title: "Show Post Normally",
+                title: "Показать пост в нормальном режиме",
                 titleColor: .white,
                 backgroundColor: .black,
                 backgroundImage: nil) {
@@ -32,7 +35,7 @@ final class FeedViewController: UIViewController {
     
     private lazy var showModallyButton: MyCustomButton = {
         let button = MyCustomButton(
-            title: "Show Post Modally",
+            title: "Показать пост в модальном режиме",
             titleColor: .white,
             backgroundColor: .black,
             backgroundImage: nil) {
@@ -49,18 +52,38 @@ final class FeedViewController: UIViewController {
             font: UIFont.systemFont(ofSize: 16),
             textColor: .black,
             backgroundColor: .white,
-            placeholder: "Enter the word")
+            placeholder: "Введите слово")
         
         return textField
     }()
     
     private lazy var checkButton: MyCustomButton = {
         let button = MyCustomButton(
-            title: "Check the word",
+            title: "Проверить слово",
             titleColor: .white,
-            backgroundColor: .black,
-            backgroundImage: nil) { [weak self] in
-            self?.onCompletion()
+            backgroundColor: .orange,
+            backgroundImage: nil) { [self] in
+            
+          self.checkTimer?.invalidate()
+            self.timeLeft = 6
+            self.checkTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                
+
+                self.colorLabel.alpha = 0
+                self.timeLeft -= 1
+                self.checkStatusLabel.alpha = 1
+                self.checkStatusLabel.text = "Осталось \(self.timeLeft) секунд до окончания проверки"
+                
+                if self.timeLeft <= 0 {
+                    self.checkStatusLabel.alpha = 0
+                    timer.invalidate()
+                    self.timeLeft = 5
+                    self.onCompletion()
+                }
+            }
+            
+            guard let timer = self.checkTimer else { return }
+            RunLoop.current.add(timer, forMode: .common)
         }
         
         button.layer.cornerRadius = 6
@@ -71,6 +94,19 @@ final class FeedViewController: UIViewController {
     private let colorLabel: UILabel = {
         let label = UILabel()
         label.alpha = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let checkStatusLabel: UILabel = {
+        let label = UILabel()
+        label.alpha = 0
+        label.backgroundColor = .darkGray
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        label.textColor = .white
+        label.layer.cornerRadius = 6
+        label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -130,6 +166,7 @@ final class FeedViewController: UIViewController {
         feedStackView.addArrangedSubview(checkTextField)
         feedStackView.addArrangedSubview(checkButton)
         feedStackView.addArrangedSubview(colorLabel)
+        feedStackView.addArrangedSubview(checkStatusLabel)
         
         feedStackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(50)

@@ -42,6 +42,7 @@ class ProfileHeaderView: UIView {
     
     private lazy var statusButton: MyCustomButton = {
         let button = MyCustomButton(title: "Set status", titleColor: .white, backgroundColor: .systemBlue, backgroundImage: nil) { [self] in
+            
             self.userStatus.text = self.statusText}
         button.layer.cornerRadius = 14
         button.layer.shadowColor = UIColor.black.cgColor
@@ -86,6 +87,7 @@ class ProfileHeaderView: UIView {
         
         self.addSubviews(userPicture, userName, userStatus, setStatus, statusButton)
         self.addSubview(profileAnimationView)
+         
         
         self.bringSubviewToFront(userPicture)
         
@@ -124,6 +126,7 @@ class ProfileHeaderView: UIView {
         profileAnimationView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
+         
     }
     
     private var baseInset: CGFloat { return 16 }

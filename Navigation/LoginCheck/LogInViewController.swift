@@ -12,7 +12,7 @@ class LogInViewController: UIViewController {
    
     var loginFactory: MyLoginFactory?
     var pushProfile: ((_ userService: UserService, _ username: String) -> Void)?
-    
+   
     private let scrollView = UIScrollView()
     
     private let logInView: UIView = {
@@ -75,7 +75,7 @@ class LogInViewController: UIViewController {
     }()
     
     private lazy var logInButton: MyCustomButton = {
-        let button = MyCustomButton(title: "Log in", titleColor: .white, backgroundColor: nil, backgroundImage: #imageLiteral(resourceName: "blue_pixel")) { [self] in
+        let button = MyCustomButton(title: "Login", titleColor: .white, backgroundColor: nil, backgroundImage: #imageLiteral(resourceName: "blue_pixel")) { [self] in
             
             #if DEBUG
             let userService = TestUserService()
