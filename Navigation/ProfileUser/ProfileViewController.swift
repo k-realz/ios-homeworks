@@ -53,7 +53,7 @@ class ProfileViewController: UIViewController {
         setUpTableView()
         setUpAnimationViews()
         
-        if let user = userService.returnUser(userName: userName) {
+        if let user = try? userService.returnUser(userName: userName) {
             viewModel.profileHeaderView.configureUser(user: user)
         }
         
@@ -62,6 +62,33 @@ class ProfileViewController: UIViewController {
         viewModel.profileHeaderView.userPicture.isUserInteractionEnabled = true
         viewModel.profileHeaderView.userPicture.addGestureRecognizer(imageTap)
     }
+    
+    
+    private func setUpTableView() {
+        view.addSubview(tableView)
+        
+        #if DEBUG
+        tableView.backgroundColor = .systemYellow
+        #else
+        tableView.backgroundColor = .systemGray6
+        #endif
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
+        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: String(describing: PhotosTableViewCell.self))
+        
+        let constraints = [
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+    
     
     @objc func tap() {
         animation()
@@ -121,31 +148,6 @@ class ProfileViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints)
     }
-    
-    private func setUpTableView() {
-        view.addSubview(tableView)
-        
-        #if DEBUG
-        tableView.backgroundColor = .systemYellow
-        #else
-        tableView.backgroundColor = .systemGray6
-        #endif
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
-        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: String(describing: PhotosTableViewCell.self))
-        
-        let constraints = [
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-    }
 }
 
 extension ProfileViewController: UITableViewDataSource {
@@ -184,7 +186,6 @@ extension ProfileViewController: UITableViewDataSource {
     }
 }
 
-
 extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
@@ -210,7 +211,9 @@ extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 0 {
+
             viewModel.pushPhotos?()
+
         } else {
             return tableView.deselectRow(at: indexPath, animated: true)
             

@@ -168,8 +168,8 @@
 			isa = PBXGroup;
 			children = (
 				CE3665A92701A27700F881D2 /* Coordinatiors */,
-				CEBF670F26CE593C00E74042 /* LoginCheck */,
 				CE3665A72701A20B00F881D2 /* Feed */,
+				CEBF670F26CE593C00E74042 /* LoginCheck */,
 				CE61D63D2659E186001C600D /* ProfileUser */,
 				CE61D6D0266F6DB0001C600D /* Storage */,
 				CE61D6CF266F6D6A001C600D /* Models */,
@@ -202,7 +202,6 @@
 		865EC0E5279350EB008A161C /* Table */ = {
 			isa = PBXGroup;
 			children = (
-				CE61D6CB266F4B61001C600D /* PhotoStorage.swift */,
 				CE3665F3272FAE6700F881D2 /* TableViewModelType.swift */,
 				CE61D6BE266F14CA001C600D /* PhotosTableViewCell.swift */,
 				CE61D687266898F4001C600D /* PostTableViewCell.swift */,
@@ -269,6 +268,7 @@
 		CE61D6D0266F6DB0001C600D /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				CE61D6CB266F4B61001C600D /* PhotoStorage.swift */,
 				8633EB89279690DD00C43F52 /* PostStorage.swift */,
 			);
 			path = Storage;

@@ -11,6 +11,7 @@ import UIKit
 
 class LoginInspector: LoginViewControllerDelegate {
     func checkTextFields(login: String, password: String) -> Bool {
+        
         let checker = Checker.instance.checkLoginData(enteredLogin: login, enteredPassword: password)
         return checker
     }

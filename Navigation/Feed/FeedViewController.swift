@@ -16,8 +16,7 @@ final class FeedViewController: UIViewController {
     var showPost: (()-> Void)?
     var presentPost: (() -> Void)?
     
-    var checkTimer: Timer?
-    var timeLeft = 6
+    private var timeLeft = 3
     
     private lazy var showNormallyButton: MyCustomButton = {
         let button =
@@ -59,31 +58,29 @@ final class FeedViewController: UIViewController {
     
     private lazy var checkButton: MyCustomButton = {
         let button = MyCustomButton(
-            title: "Проверить слово",
+            title: "Check the word",
             titleColor: .white,
-            backgroundColor: .orange,
-            backgroundImage: nil) { [self] in
+            backgroundColor: .systemGray,
+            backgroundImage: nil) { [weak self] in
             
-          self.checkTimer?.invalidate()
-            self.timeLeft = 6
-            self.checkTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            var myTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
                 
-
-                self.colorLabel.alpha = 0
-                self.timeLeft -= 1
-                self.checkStatusLabel.alpha = 1
-                self.checkStatusLabel.text = "Осталось \(self.timeLeft) секунд до окончания проверки"
+                guard let time = self?.timeLeft else { return }
                 
-                if self.timeLeft <= 0 {
-                    self.checkStatusLabel.alpha = 0
+                self?.colorLabel.alpha = 0
+                self?.timeLeft -= 1
+                self?.checkStatusLabel.alpha = 1
+                self?.checkStatusLabel.text = "\(time) seconds left to check"
+                
+                if time <= 0 {
+                    self?.checkStatusLabel.alpha = 0
                     timer.invalidate()
-                    self.timeLeft = 5
-                    self.onCompletion()
+                    self?.timeLeft = 3
+                    self?.onCompletion()
                 }
             }
             
-            guard let timer = self.checkTimer else { return }
-            RunLoop.current.add(timer, forMode: .common)
+            RunLoop.current.add(myTimer, forMode: .common)
         }
         
         button.layer.cornerRadius = 6
@@ -94,6 +91,8 @@ final class FeedViewController: UIViewController {
     private let colorLabel: UILabel = {
         let label = UILabel()
         label.alpha = 0
+        label.layer.cornerRadius = 6
+        label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -103,7 +102,7 @@ final class FeedViewController: UIViewController {
         label.alpha = 0
         label.backgroundColor = .darkGray
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         label.textColor = .white
         label.layer.cornerRadius = 6
         label.clipsToBounds = true
@@ -145,14 +144,28 @@ final class FeedViewController: UIViewController {
         let enteredWord = checkTextField.text
         checker.check(word: enteredWord ?? "") { [weak self] result in
             switch  result {
-            case .correct:
+            case .success(let success):
                 self?.colorLabel.backgroundColor = .green
+                self?.colorLabel.text = "\(success)"
+                self?.colorLabel.textAlignment = .center
+                self?.colorLabel.textColor = .white
+                self?.colorLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
                 self?.colorLabel.alpha = 1
-            case .incorrect:
+            case .failure(.incorrect):
                 self?.colorLabel.backgroundColor = .red
+                self?.colorLabel.text = "Incorrect!"
+                self?.colorLabel.textAlignment = .center
+                self?.colorLabel.textColor = .white
+                self?.colorLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
                 self?.colorLabel.alpha = 1
-            default: self?.colorLabel.alpha = 0
-                
+            case .failure(.empty):
+                self?.colorLabel.backgroundColor = .yellow
+                self?.colorLabel.text = "Please, enter the word for check!"
+                self?.colorLabel.numberOfLines = 0
+                self?.colorLabel.textAlignment = .center
+                self?.colorLabel.textColor = .black
+                self?.colorLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+                self?.colorLabel.alpha = 1
             }
         }
     }

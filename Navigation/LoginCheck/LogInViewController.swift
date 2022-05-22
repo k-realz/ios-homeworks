@@ -8,6 +8,11 @@
 
 import UIKit
 
+enum AuthorizationError: Error {
+    case empty
+    case incorrect
+}
+
 class LogInViewController: UIViewController {
    
     var loginFactory: MyLoginFactory?
@@ -75,35 +80,48 @@ class LogInViewController: UIViewController {
     }()
     
     private lazy var logInButton: MyCustomButton = {
-        let button = MyCustomButton(title: "Login", titleColor: .white, backgroundColor: nil, backgroundImage: #imageLiteral(resourceName: "blue_pixel")) { [self] in
-            
-            #if DEBUG
-            let userService = TestUserService()
-            #else
-            let userService = CurrentUserService()
-            #endif
-            
-            if let username = self.nameTextField.text,
-               let pswd = self.passwordTextField.text,
-               let inspector = self.loginFactory?.produceLoginInspector,
-               inspector().checkTextFields(login: username, password: pswd) == true {
-                self.pushProfile?(userService, username)
-            } else {
-                self.showAlert()
+        let button = MyCustomButton(title: "Log in", titleColor: .white, backgroundColor: nil, backgroundImage: #imageLiteral(resourceName: "blue_pixel")) { [self] in
+            do {
+                try self.performLogin()
+            } catch AuthorizationError.empty {
+                self.showAlert(message: "Do not live blank fields!")
+            } catch AuthorizationError.incorrect {
+                self.showAlert(message: "User name or password is invalid")
+            } catch {
+                self.showAlert(message: "Unexpected error")
             }
         }
-        
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         return button
     }()
     
-    private func showAlert() {
-        let alertController = UIAlertController(title: "ERROR", message: "Username or password is invalid", preferredStyle: .alert)
+    private func performLogin() throws {
+        
+        #if DEBUG
+        let userService = TestUserService()
+        #else
+        let userService = CurrentUserService()
+        #endif
+        
+        guard nameTextField.text != "" || passwordTextField.text != "" else {
+            throw AuthorizationError.empty
+        }
+        guard let username = nameTextField.text,
+              let pswd = passwordTextField.text,
+              let inspector = loginFactory?.produceLoginInspector,
+              inspector().checkTextFields(login: username, password: pswd) == true else {
+            throw AuthorizationError.incorrect
+        }
+
+        pushProfile?(userService, username)
+    }
+    
+    private func showAlert(message: String) {
+        let alertController = UIAlertController(title: "ERROR", message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         alertController.addAction(cancelAction)
         self.present(alertController, animated: true, completion: nil)
-        print("invalid name")
     }
     
     override func viewDidLoad() {
